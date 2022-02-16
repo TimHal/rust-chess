@@ -1,5 +1,7 @@
 /// The core library for rust-chess. (WIP)
-mod core {
+pub mod parser;
+
+pub mod core {
 
     use std::fmt;
 
@@ -15,16 +17,16 @@ mod core {
 
     #[derive(Debug)]
     pub struct Board<'a> {
-        squares: [[Square; 8]; 8],
-        pieces: Vec<Piece<'a>>,
-        is_valid: bool
+        pub squares: [[Square; 8]; 8],
+        pub pieces: Vec<Piece<'a>>,
+        pub is_valid: bool
     }
 
     #[derive(Debug)]
     pub struct Piece<'a> {
-        color: Color,
-        figure: Figure,
-        square: &'a Square
+        pub color: Color,
+        pub figure: Figure,
+        pub square: &'a Square
     }
 
 

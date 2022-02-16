@@ -1,40 +1,36 @@
+use crate::core::Piece;
+use crate::core::Color;
+use crate::core::Square;
+use crate::core::Figure;
 /// This module holds the supported parsers and formats. Common formats are Fen, ACN, DCN and PGN
-mod parser {
-    #[cfg(test)]
-    mod tests {
-        #[test]
-        fn it_works() {
-            let result = 2 + 2;
-            assert_eq!(result, 4);
-        }
-
-        #[test]
-        fn create_std_board_from_fen() {
-            let std_fen = "";
-            assert_eq!(1, 1);
-        }
-
-        
-    }
-
-
-    use crate::core::*;
-
+pub mod parser {
+    
+    use crate::core::Board;
+    /// Returns an Option of Board if fen_string is a valid Fen-encoded position
+    ///
+    /// # Arguments
+    ///
+    /// * `fen_string` - String slice to contain the Fen-encoded position and nothing else
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let board_in_starting_position = parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    /// ```
     pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
-        /// Returns an Option of Board if fen_string is a valid Fen-encoded position
-        ///
-        /// # Arguments
-        ///
-        /// * `fen_string` - String slice to contain the Fen-encoded position and nothing else
-        ///
-        /// # Examples
-        ///
-        /// ```
-        /// let board_in_starting_position = parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        /// ```
         let board = Board::new();
 
+        // The 'fields' in a Fen record are separated by whitespaces. 
         let fields: Vec<&str> = fen_string.trim().split(' ').collect();
+
+        // The first field contains the position as seen by the white player from the last to first rank.
+        // However, we are parsing it from to first to the last rank, so it needs to be inverted
+        let ranks = fields.iter().next().unwrap().split('/');
+        for r in ranks {
+            println!("{}", r);
+        }
+
+
         
         for (_i, &char) in fen_string.trim().as_bytes().iter().enumerate() {
             if char == b' ' {
@@ -56,6 +52,8 @@ mod parser {
 }
 
 impl Piece<'_> {
+
+        
 
     pub fn from_fen<'a>(s: &'a str, pos: &'a Square) -> Result<Piece<'a>, &'a str> {
         // check if it is a valid FEN Piece character

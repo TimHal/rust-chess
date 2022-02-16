@@ -10,7 +10,6 @@ mod game {
     }
 
     pub struct Context<'a> {
-        
     }
 
 }
