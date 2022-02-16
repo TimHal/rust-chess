@@ -9,6 +9,8 @@ mod tests {
         let board = Board::new();
         assert_eq!(&Square { pos: ('a', '4') }, board.get("a4").unwrap());
         assert_ne!(&Square { pos: ('h', '1') }, board.get("a1").unwrap());
+        // also check Square.from method
+        assert_eq!(&Square::from_str("f3"), board.get("f3").unwrap());
     }
 
     #[test]
