@@ -1,12 +1,4 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-}
-
+/// The core library for rust-chess. (WIP)
 mod core {
 
     use std::fmt;
@@ -52,6 +44,7 @@ mod core {
 
 
     impl<'a> Board<'a> {
+        /// Creates a new board in standard position.
         pub fn new() -> Board<'a> {
 
             let files: [char; 8] = ('a'..='h').collect::<Vec<_>>().try_into().expect("Wrong size");
@@ -83,11 +76,6 @@ mod core {
     }
 
     impl Piece<'_> {
-
-        pub fn from_fen<'a>(s: &'a str, pos: &'a Square) -> Piece<'a> {
-            Piece { color: Color::White, figure: Figure::King, square: pos  }
-        }
-        
     }
 
 }
