@@ -12,7 +12,7 @@ pub mod core {
     
     #[derive(Debug, Copy, Clone)]
     pub struct Square {
-        pos: (char, char)
+        pub pos: (char, char)
     }
 
     #[derive(Debug)]
@@ -44,6 +44,11 @@ pub mod core {
         }
     }
 
+    impl PartialEq for Square {
+        fn eq(&self, other: &Self) -> bool {
+            self.pos.0 == other.pos.0 && self.pos.1 == other.pos.1
+        }
+    }
 
     impl<'a> Board<'a> {
         /// Creates a new board in standard position.
@@ -61,7 +66,34 @@ pub mod core {
 
             Board {squares: squares, is_valid: true, pieces: Vec::new()}
         }
+
+        pub fn get(&self, index_str: &str) -> Option<&Square> {
+            // is valid notation string?
+            let lowercase = index_str.to_ascii_lowercase();
+            let bytes = lowercase.trim().as_bytes();
+            if !bytes.len() == 2 { 
+                return None 
+            } else {
+                let res = match (bytes[0] as char, bytes[1] as char) {
+                    ('a'..='h', '1'..='8') => Some(&self.squares[(bytes[1] as u8 - b'1') as usize]
+                                                                [(bytes[0] as u8 - b'a') as usize]),
+                    _ => None
+                };
+                return res;
+            }
+        }
     }
+
+    // This is too dangerous because Index can not return Option, use get instead.
+    // impl<'a> std::ops::Index<&str> for Board<'a> {
+    //     type Output = Option<Square>;
+    //     // type Output = Square;
+    //     fn index(&self, index: &str) -> a Option<Square> {
+    //         Some(self.squares[4][4])
+    //     }
+    // }
+
+
 
     impl<'a> fmt::Display for Board<'a> {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
