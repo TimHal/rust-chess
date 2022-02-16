@@ -1,5 +1,5 @@
 [package]
-name = "rust-chess"
+name = "rust_chess"
 version = "0.1.0"
 edition = "2021"
 
