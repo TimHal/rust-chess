@@ -1,4 +1,4 @@
-use rust_chess::parser::parser::parse_fen;
+use rust_chess::parser::parse_fen;
 
 #[cfg(test)]
 mod tests {
