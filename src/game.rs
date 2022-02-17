@@ -6,14 +6,15 @@ mod game {
 
     pub struct Game<'a> {
         context: Option(Context),
-        board: Board
+        board: Board,
+        moves: Vec<Move>,
     }
 
     pub struct Context<'a> {
     }
 
-}
+    pub struct Move {
 
-fn main() {
-    println!("Hello from game");
+    }
+
 }

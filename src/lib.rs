@@ -39,6 +39,14 @@ pub mod core {
         }
     }
 
+    impl std::ops::Add for Square {
+        type Output = Self; 
+        fn add(self, other: Self) -> Self {
+            Self {pos: ((self.pos.0 as u8 + other.pos.0 as u8) as char, 
+                        (self.pos.1 as u8 + other.pos.1 as u8) as char)}
+        }
+    }
+
     impl fmt::Display for Square {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "[{}{}]", self.pos.0, self.pos.1)
@@ -83,12 +91,48 @@ pub mod core {
                 return res;
             }
         }
-
+        
         pub fn get_from_coord(&self, rank_byte: u8, file_byte: u8) -> Option<&Square> {
             let rank_char = (b'a' + rank_byte) as char;
             let file_char = (b'1' + file_byte) as char;
             
             self.get(&String::from_iter([rank_char, file_char]))
+        }
+
+        pub fn get_from_tup(&self, index: (u8, u8)) -> Option<&Square> {
+            self.get_from_coord(index.0, index.1)
+        }
+
+        pub fn squares_as_vec(&self) -> Vec<&Square> {
+            let mut squares: Vec<&Square> = vec! [];
+            for file in self.squares.iter() {
+                let file: Vec<&Square> = file.iter().collect();
+                for f in file {
+                    squares.push(f);
+                }
+            }
+            squares
+        }
+        
+        pub fn get_rank_from_square(&self, square: &Square) -> Vec<&Square> {
+            let rank = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.1 == square.pos.1).collect();
+            rank
+        }
+
+        pub fn get_file_from_square(&self, square: &Square) -> Vec<&Square> {
+            let rank = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.0 == square.pos.0).collect();
+            rank
+        }
+
+        pub fn get_diag_from_square(&self, square: &Square) -> Vec<&Square> {
+            let directions = vec! [(1,1), (-1,-1), (1,-1), (-1,1)];
+            let mut squares: Vec<&Square> = vec! [];
+            for direction in directions {
+                // let next_square; 
+
+            }
+
+            vec! []
         }
 
     }
