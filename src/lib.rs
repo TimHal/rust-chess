@@ -5,24 +5,25 @@ pub mod core {
 
     use std::fmt;
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone, Copy)]
     pub enum Color { Black, White }
-    #[derive(Debug)]
+
+    #[derive(Debug, Clone, Copy)]
     pub enum Figure { Pawn, Rook, Knight, Bishop, Queen, King }
     
-    #[derive(Debug, Copy, Clone)]
+    #[derive(Debug, Clone, Copy)]
     pub struct Square {
         pub pos: (char, char)
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct Board<'a> {
         pub squares: [[Square; 8]; 8],
         pub pieces: Vec<Piece<'a>>,
         pub is_valid: bool
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct Piece<'a> {
         pub color: Color,
         pub figure: Figure,
@@ -82,6 +83,14 @@ pub mod core {
                 return res;
             }
         }
+
+        pub fn get_from_coord(&self, rank_byte: u8, file_byte: u8) -> Option<&Square> {
+            let rank_char = (b'a' + rank_byte) as char;
+            let file_char = (b'1' + file_byte) as char;
+            
+            self.get(&String::from_iter([rank_char, file_char]))
+        }
+
     }
 
     // This is too dangerous because Index can not return Option, use get instead.
@@ -92,8 +101,6 @@ pub mod core {
     //         Some(self.squares[4][4])
     //     }
     // }
-
-
 
     impl<'a> fmt::Display for Board<'a> {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
