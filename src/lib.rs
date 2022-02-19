@@ -4,6 +4,7 @@ pub mod parser;
 pub mod core {
 
     use std::fmt;
+    use std::collections::HashSet;
 
     #[derive(Debug, Clone, Copy)]
     pub enum Color { Black, White }
@@ -11,7 +12,7 @@ pub mod core {
     #[derive(Debug, Clone, Copy)]
     pub enum Figure { Pawn, Rook, Knight, Bishop, Queen, King }
     
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, Eq, Hash)]
     pub struct Square {
         pub pos: (char, char)
     }
@@ -37,15 +38,44 @@ pub mod core {
             let chars: Vec<char> = s.chars().collect();
             Square{ pos: (chars[0], chars[1]) }
         }
-    }
 
-    impl std::ops::Add for Square {
-        type Output = Self; 
-        fn add(self, other: Self) -> Self {
-            Self {pos: ((self.pos.0 as u8 + other.pos.0 as u8) as char, 
-                        (self.pos.1 as u8 + other.pos.1 as u8) as char)}
+        pub fn move_by(&self, delta: (i8,i8)) -> Option<Square> {
+            let delta_f = ((self.pos.0 as i8) - ('a' as i8)) + delta.0; 
+            let delta_r = ((self.pos.1 as i8) - ('1' as i8)) + delta.1;
+
+            if delta_f >= 0 && delta_f >= 0 {
+                let files: Vec<char> = ('a'..='h').collect();
+                let ranks: Vec<char> = ('1'..='8').collect();
+                let new_file: &char = files.get(delta_f as usize)?;
+                let new_rank: &char = ranks.get(delta_r as usize)?;
+
+                Some( Square {pos: (*new_file, *new_rank)} )
+            } else {
+                None
+            }
         }
     }
+
+    // Not a good idea, better use move_by
+    //
+    // impl std::ops::Add for Square {
+    //     type Output = Self; 
+    //     fn add(self, other: Self) -> Self {
+    //         Self {pos: ((self.pos.0 as u8 + other.pos.0 as u8) as char, 
+    //                     (self.pos.1 as u8 + other.pos.1 as u8) as char)}
+    //     }
+    // }
+
+    // impl std::ops::Add<(i8, i8)> for Square {
+    //     type Output = Self;
+    //     fn add(self, other: (i8, i8)) -> Self {
+    //         let delta_0 = other.0 + (self.pos.0 as i8) - ('a' as i8);
+    //         let delta_1 = other.1 + (self.pos.1 as i8) - ('a' as i8);
+    //         self
+    //     }
+    // }
+
+    
 
     impl fmt::Display for Square {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -103,6 +133,7 @@ pub mod core {
             self.get_from_coord(index.0, index.1)
         }
 
+
         pub fn squares_as_vec(&self) -> Vec<&Square> {
             let mut squares: Vec<&Square> = vec! [];
             for file in self.squares.iter() {
@@ -112,6 +143,10 @@ pub mod core {
                 }
             }
             squares
+        }
+
+        pub fn squares_as_set(&self) -> HashSet<&Square> {
+            HashSet::from_iter(self.squares_as_vec().iter().cloned())
         }
         
         pub fn get_rank_from_square(&self, square: &Square) -> Vec<&Square> {
@@ -127,13 +162,27 @@ pub mod core {
         pub fn get_diag_from_square(&self, square: &Square) -> Vec<&Square> {
             let directions = vec! [(1,1), (-1,-1), (1,-1), (-1,1)];
             let mut squares: Vec<&Square> = vec! [];
-            for direction in directions {
-                // let next_square; 
+            squares.push(&self.get( &String::from_iter([square.pos.0, square.pos.1])[..]).unwrap());
 
+            for direction in directions {
+                let mut next_square = square.move_by(direction);
+                while next_square.is_some() {
+                    let next_pos = next_square.unwrap().pos;
+                    let intermediate = &self.get( &String::from_iter([next_pos.0, next_pos.1])[..]);
+                    if intermediate.is_none() {
+                        break;
+                    } else {
+                        let next_square_board = intermediate.unwrap();
+                        squares.push(next_square_board);
+                        next_square = next_square_board.move_by(direction);
+                    }
+                }
             }
 
-            vec! []
+            squares
         }
+
+        
 
     }
 

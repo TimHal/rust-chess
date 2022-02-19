@@ -3,6 +3,7 @@
 mod tests {
     use rust_chess::core::Board;
     use rust_chess::core::Square;
+    use std::collections::HashSet;
     
     #[test]
     fn board_indexing() {
@@ -46,5 +47,55 @@ mod tests {
         let rank_mixed = &["b1", "b2", "c3", "d4", "b5", "b6", "e7", "b8"];
         let rank_squares_mixed: Vec<&Square> = rank_mixed.iter().map(|f| board.get(f).unwrap() ).collect();
         assert_ne!(board.get_rank_from_square(src_square), rank_squares_mixed);
+    }
+
+    #[test]
+    fn board_get_diag() {
+        let board = Board::new();
+        let diag = &["a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"];
+        let diag_squares: Vec<&Square> = diag.iter().map(|d| board.get(d).unwrap() ).collect();
+        let src_square = board.get("a1").unwrap();
+        assert_eq!(board.get_diag_from_square(src_square), diag_squares);
+
+        let diag2 = &["b3", "c4", "d5", "e6", "f7", "g8", "e8", "g6", "h5"];
+        let diag2_squares: Vec<&Square> = diag2.iter().map(|d2| board.get(d2).unwrap() ).collect();
+        let src_square2 = board.get("f7").unwrap();
+        assert_eq!(board.get_diag_from_square(src_square2), diag2_squares);
+    }
+
+    #[test]
+    fn square_arithmetics() {
+        let board = Board::new();
+        let square = board.get("e2").unwrap();
+        assert_eq!(square.pos, square.move_by((0,0)).unwrap().pos);
+        assert_eq!(board.get("f2").unwrap().pos, square.move_by((1,0)).unwrap().pos);
+        assert_eq!(board.get("a8").unwrap().pos, square.move_by((-4,6)).unwrap().pos);
+    }
+
+    #[test]
+    fn pieces_pawn_available_squares() {
+        assert_eq!(1,1)
+    }
+    
+    #[test]
+    fn pieces_rook_available_squares() {
+        assert_eq!(1,1)
+    }
+    #[test]
+    fn pieces_knight_available_squares() {
+        assert_eq!(1,1)
+    }
+    #[test]
+    fn pieces_bishop_available_squares() {
+        assert_eq!(1,1)
+    }
+    #[test]
+    fn pieces_queen_available_squares() {
+        assert_eq!(1,1)
+    }
+    
+    #[test]
+    fn pieces_king_available_squares() {
+        assert_eq!(1,1)
     }
 }
