@@ -25,9 +25,21 @@ impl Piece {
             _ => vec! []
         }
     }
-    fn get_candidate_squares_rook(&self, board: &board) -> Vec<Square> {}
+    fn get_candidate_squares_rook(&self, board: &board) -> Vec<Square> {
+        let directions = [(1,0), (-1,0), (0,1), (0,-1)];
+        for direction in directions {
+            let curr_square = self.square;
+            
+        }
+        board.get_file_from_square(&self.square).iter().chain(
+            board.get_rank_from_square(&self.square).iter()
+        ).collect()
+    }
+
     fn get_candidate_squares_knight(&self, board: &board) -> Vec<Square> {}
-    fn get_candidate_squares_bishop(&self, board: &board) -> Vec<Square> {}
+    fn get_candidate_squares_bishop(&self, board: &board) -> Vec<Square> {
+        let directions = [(1,1), (1,-1), (-1,1), (-1,-1)];
+    }
     fn get_candidate_squares_queen(&self, board: &board) -> Vec<Square> {}
     fn get_candidate_squares_king(&self, board: &board) -> Vec<Square> {}
     
