@@ -14,7 +14,7 @@ use crate::core::Color;
 /// # Examples
 ///
 /// ```
-/// let board_in_starting_position = rust_chess::parser::parser::parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+/// let board_in_starting_position = rust_chess::parser::parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 /// ```
 pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
     let board = Board::new();
