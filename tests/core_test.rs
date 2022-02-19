@@ -26,50 +26,59 @@ mod tests {
     #[test]
     fn board_get_file() {
         let board = Board::new();
-        let file = &["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"];
-        let file_squares: Vec<&Square> = file.iter().map(|f| board.get(f).unwrap() ).collect();
-        let src_square = board.get("b2").unwrap();
+        let board_file = &board.get_file_from_square(board.get_unchecked("b2"));
         
-        assert_eq!(board.get_file_from_square(src_square), file_squares);
+        let file = &["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"];
+        let file_squares: HashSet<&Square> = file.iter().map(|f| board.get(f).unwrap() ).collect();
+        let diff: HashSet<&Square> = file_squares.symmetric_difference(board_file).cloned().collect();
+        assert_eq!(true, diff.is_empty());
+
         let file_mixed = &["b1", "b2", "c3", "d4", "b5", "b6", "e7", "b8"];
-        let file_squares_mixed: Vec<&Square> = file_mixed.iter().map(|f| board.get(f).unwrap() ).collect();
-        assert_ne!(board.get_file_from_square(src_square), file_squares_mixed);
+        let file_squares_mixed: HashSet<&Square> = file_mixed.iter().map(|f| board.get(f).unwrap() ).collect();
+        let diff: HashSet<&Square> = file_squares_mixed.symmetric_difference(board_file).cloned().collect();
+        assert_eq!(6, diff.len());
     }
 
     #[test]
     fn board_get_rank() {
         let board = Board::new();
+        let board_rank = &board.get_rank_from_square(board.get_unchecked("c1"));
+
         let rank = &["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"];
-        let rank_squares: Vec<&Square> = rank.iter().map(|f| board.get(f).unwrap() ).collect();
-        let src_square = board.get("c1").unwrap();
+        let rank_squares: HashSet<&Square> = rank.iter().map(|f| board.get(f).unwrap() ).collect();
+        let diff: HashSet<&Square> = rank_squares.symmetric_difference(board_rank).cloned().collect();
+        assert_eq!(true, diff.is_empty());
         
-        assert_eq!(board.get_rank_from_square(src_square), rank_squares);
         let rank_mixed = &["b1", "b2", "c3", "d4", "b5", "b6", "e7", "b8"];
-        let rank_squares_mixed: Vec<&Square> = rank_mixed.iter().map(|f| board.get(f).unwrap() ).collect();
-        assert_ne!(board.get_rank_from_square(src_square), rank_squares_mixed);
+        let rank_squares_mixed: HashSet<&Square> = rank_mixed.iter().map(|f| board.get(f).unwrap() ).collect();
+        let diff: HashSet<&Square> = rank_squares_mixed.symmetric_difference(board_rank).cloned().collect();
+        assert_eq!(14, diff.len());
     }
 
     #[test]
     fn board_get_diag() {
         let board = Board::new();
-        let diag = &["a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"];
-        let diag_squares: Vec<&Square> = diag.iter().map(|d| board.get(d).unwrap() ).collect();
-        let src_square = board.get("a1").unwrap();
-        assert_eq!(board.get_diag_from_square(src_square), diag_squares);
+        let board_diag = &board.get_diag_from_square(board.get_unchecked("a1"));
 
-        let diag2 = &["b3", "c4", "d5", "e6", "f7", "g8", "e8", "g6", "h5"];
-        let diag2_squares: Vec<&Square> = diag2.iter().map(|d2| board.get(d2).unwrap() ).collect();
-        let src_square2 = board.get("f7").unwrap();
-        assert_eq!(board.get_diag_from_square(src_square2), diag2_squares);
+        let diag = &["a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"];
+        let diag_squares: HashSet<&Square> = diag.iter().map(|d| board.get(d).unwrap() ).collect();
+        let diff: HashSet<&Square> = diag_squares.symmetric_difference(board_diag).cloned().collect();
+        assert_eq!(true, diff.is_empty());
+
+        let board_diag = &board.get_diag_from_square(board.get_unchecked("e7"));
+        let diag = &["a3", "b4", "c5", "d6", "e7", "f8", "d8", "f6", "g5", "h4"];
+        let diag_squares: HashSet<&Square> = diag.iter().map(|d| board.get(d).unwrap() ).collect();
+        let diff: HashSet<&Square> = diag_squares.symmetric_difference(board_diag).cloned().collect();
+        assert_eq!(true, diff.is_empty());
     }
 
     #[test]
     fn square_arithmetics() {
         let board = Board::new();
-        let square = board.get("e2").unwrap();
+        let square = board.get_unchecked("e2");
         assert_eq!(square.pos, square.move_by((0,0)).unwrap().pos);
-        assert_eq!(board.get("f2").unwrap().pos, square.move_by((1,0)).unwrap().pos);
-        assert_eq!(board.get("a8").unwrap().pos, square.move_by((-4,6)).unwrap().pos);
+        assert_eq!(board.get_unchecked("f2").pos, square.move_by((1,0)).unwrap().pos);
+        assert_eq!(board.get_unchecked("a8").pos, square.move_by((-4,6)).unwrap().pos);
     }
 
     #[test]

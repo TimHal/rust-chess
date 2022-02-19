@@ -56,27 +56,6 @@ pub mod core {
         }
     }
 
-    // Not a good idea, better use move_by
-    //
-    // impl std::ops::Add for Square {
-    //     type Output = Self; 
-    //     fn add(self, other: Self) -> Self {
-    //         Self {pos: ((self.pos.0 as u8 + other.pos.0 as u8) as char, 
-    //                     (self.pos.1 as u8 + other.pos.1 as u8) as char)}
-    //     }
-    // }
-
-    // impl std::ops::Add<(i8, i8)> for Square {
-    //     type Output = Self;
-    //     fn add(self, other: (i8, i8)) -> Self {
-    //         let delta_0 = other.0 + (self.pos.0 as i8) - ('a' as i8);
-    //         let delta_1 = other.1 + (self.pos.1 as i8) - ('a' as i8);
-    //         self
-    //     }
-    // }
-
-    
-
     impl fmt::Display for Square {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "[{}{}]", self.pos.0, self.pos.1)
@@ -102,7 +81,6 @@ pub mod core {
                     squares[j][i] = Square{ pos: (f.clone(), r.clone()) };
                 }
             }
-
             Board {squares: squares, is_valid: true, pieces: Vec::new()}
         }
 
@@ -120,6 +98,10 @@ pub mod core {
                 };
                 return res;
             }
+        }
+
+        pub fn get_unchecked(&self, index_str: &str) -> &Square {
+            self.get(index_str).unwrap()
         }
         
         pub fn get_from_coord(&self, rank_byte: u8, file_byte: u8) -> Option<&Square> {
@@ -149,17 +131,18 @@ pub mod core {
             HashSet::from_iter(self.squares_as_vec().iter().cloned())
         }
         
-        pub fn get_rank_from_square(&self, square: &Square) -> Vec<&Square> {
-            let rank = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.1 == square.pos.1).collect();
-            rank
+        pub fn get_rank_from_square(&self, square: &Square) -> HashSet<&Square> {
+            let rank: Vec<&Square> = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.1 == square.pos.1).collect();
+            HashSet::from_iter(rank.iter().copied())
+                        // self.squares_as_set().iter().map(|sq| *sq)
         }
 
-        pub fn get_file_from_square(&self, square: &Square) -> Vec<&Square> {
-            let rank = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.0 == square.pos.0).collect();
-            rank
+        pub fn get_file_from_square(&self, square: &Square) -> HashSet<&Square> {
+            let file: Vec<&Square> = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.0 == square.pos.0).collect();
+            HashSet::from_iter(file.iter().copied())
         }
 
-        pub fn get_diag_from_square(&self, square: &Square) -> Vec<&Square> {
+        pub fn get_diag_from_square(&self, square: &Square) -> HashSet<&Square> {
             let directions = vec! [(1,1), (-1,-1), (1,-1), (-1,1)];
             let mut squares: Vec<&Square> = vec! [];
             squares.push(&self.get( &String::from_iter([square.pos.0, square.pos.1])[..]).unwrap());
@@ -177,23 +160,11 @@ pub mod core {
                         next_square = next_square_board.move_by(direction);
                     }
                 }
-            }
-
-            squares
+            };
+            HashSet::from_iter(squares.iter().copied())
         }
 
-        
-
     }
-
-    // This is too dangerous because Index can not return Option, use get instead.
-    // impl<'a> std::ops::Index<&str> for Board<'a> {
-    //     type Output = Option<Square>;
-    //     // type Output = Square;
-    //     fn index(&self, index: &str) -> a Option<Square> {
-    //         Some(self.squares[4][4])
-    //     }
-    // }
 
     impl<'a> fmt::Display for Board<'a> {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
