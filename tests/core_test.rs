@@ -1,8 +1,7 @@
 
 #[cfg(test)]
 mod tests {
-    use rust_chess::core::Board;
-    use rust_chess::core::Square;
+    use rust_chess::core::{Board, Square, Color, Figure, Piece};
     use std::collections::HashSet;
     
     #[test]
@@ -79,6 +78,28 @@ mod tests {
         assert_eq!(square.pos, square.move_by((0,0)).unwrap().pos);
         assert_eq!(board.get_unchecked("f2").pos, square.move_by((1,0)).unwrap().pos);
         assert_eq!(board.get_unchecked("a8").pos, square.move_by((-4,6)).unwrap().pos);
+    }
+
+    #[test]
+    fn board_check_square_for_piece() {
+        let board = &mut Board::new();
+        let pieces = vec! [Piece {color: Color::Black, figure: Figure::Rook, square: *board.get_unchecked("a3")},
+                           Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("a8")},
+                           Piece {color: Color::Black, figure: Figure::Pawn, square: *board.get_unchecked("a7")},
+                           Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("e6")}];
+        
+        for &piece in pieces.iter() {
+            board.pieces.push(piece);
+        }
+
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a3")).is_some());
+        assert_eq!(false, board.check_square_for_piece(board.get_unchecked("b2")).is_some());
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("b2")).is_none());
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a8")).is_some());
+        assert_eq!(false, board.check_square_for_piece(board.get_unchecked("h1")).is_some());
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a7")).is_some());
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("e6")).is_some());
+        
     }
 
     #[test]
