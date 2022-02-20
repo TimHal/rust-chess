@@ -168,7 +168,7 @@ pub mod core {
             self.pieces.iter().find(|&p| p.square.pos == square.pos)
         }
 
-        pub fn add_piece(mut self, piece: Piece) -> Self {
+        pub fn add_piece(&mut self, piece: Piece) -> &Self {
             self.pieces.push(piece);
             self
         }
