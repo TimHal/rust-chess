@@ -17,7 +17,7 @@ use crate::core::Color;
 /// let board_in_starting_position = rust_chess::parser::parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 /// ```
 pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
-    let board = Board::new();
+    let board = &mut Board::new();
 
     // The 'fields' in a Fen record are separated by whitespaces. 
     let fields: Vec<&str> = fen_string.trim().split(' ').collect();
@@ -38,18 +38,27 @@ pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
             };
 
             match *byte as char {
-                '1'..='8' => { f_index += *byte - (b'1' + 1) ; continue; },
+                '1'..='8' => { 
+                    f_index += *byte - b'1'; 
+                    continue; 
+                },
                 _ => ()
             } 
             // TODO: if *byte in 1..8 skip as many
 
             // let piece = Piece{color: Color::White, figure: Piece::from_fen(byte).unwrap(), square: board.get_from_coord(r_index as u8, f_index as u8).unwrap()};
-            let piece = Piece::from_fen(*byte as char, board.get_from_coord(f_index as u8, r_index as u8).unwrap());
+            let square = board.get_from_coord(f_index as u8, r_index as u8).unwrap();
+            let piece = Piece::from_fen(*byte as char, square).unwrap();
             pieces_vec.push(piece);
             f_index += 1;
         };
     };
-    Ok(board)
+    for &piece in pieces_vec.iter() {
+        // board.pieces.push(piece.unwrap());
+        board.add_piece(piece);
+    }
+    
+    Ok(board.clone())
 }
 
 pub fn is_fen_piece_char(c: char) -> bool {
