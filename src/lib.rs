@@ -6,10 +6,10 @@ pub mod core {
     use std::fmt;
     use std::collections::HashSet;
 
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum Color { Black, White }
 
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum Figure { Pawn, Rook, Knight, Bishop, Queen, King }
     
     #[derive(Debug, Clone, Copy, Eq, Hash)]
@@ -24,7 +24,7 @@ pub mod core {
         pub is_valid: bool
     }
 
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub struct Piece {
         pub color: Color,
         pub figure: Figure,
@@ -173,8 +173,10 @@ pub mod core {
             self
         }
 
-        pub fn remove_piece() {
-
+        pub fn remove_piece(&mut self, piece: Piece) -> &Self {
+            // find piece index in vec
+            self.pieces.retain(|p| *p != piece);
+            self
         }
     }
 

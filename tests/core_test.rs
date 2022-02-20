@@ -104,6 +104,18 @@ mod tests {
     }
 
     #[test]
+    fn add_and_remove_pieces() {
+        let board = &mut Board::new();
+        let piece = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("b3")};
+        
+        board.add_piece(piece);
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("b3")).is_some());
+        board.remove_piece(piece);
+        assert_eq!(true, board.check_square_for_piece(board.get_unchecked("b3")).is_none());
+        assert_eq!(0, board.pieces.len());
+    }
+
+    #[test]
     fn pieces_pawn_available_squares() {
         assert_eq!(1,1)
     }
