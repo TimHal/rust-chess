@@ -90,6 +90,7 @@ mod tests {
         
         for &piece in pieces.iter() {
             board.pieces.push(piece);
+            // board.add_piece(piece);
         }
 
         assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a3")).is_some());
