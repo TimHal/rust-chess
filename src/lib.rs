@@ -18,17 +18,17 @@ pub mod core {
     }
 
     #[derive(Debug, Clone)]
-    pub struct Board<'a> {
+    pub struct Board<> {
         pub squares: [[Square; 8]; 8],
-        pub pieces: Vec<Piece<'a>>,
+        pub pieces: Vec<Piece>,
         pub is_valid: bool
     }
 
-    #[derive(Debug, Clone)]
-    pub struct Piece<'a> {
+    #[derive(Debug, Clone, Copy)]
+    pub struct Piece {
         pub color: Color,
         pub figure: Figure,
-        pub square: &'a Square
+        pub square: Square
     }
 
 
@@ -68,9 +68,9 @@ pub mod core {
         }
     }
 
-    impl<'a> Board<'a> {
+    impl Board {
         /// Creates a new board in standard position.
-        pub fn new() -> Board<'a> {
+        pub fn new() -> Board {
 
             let files: [char; 8] = ('a'..='h').collect::<Vec<_>>().try_into().expect("Wrong size");
             let ranks: [char; 8] = ('1'..='8').collect::<Vec<_>>().try_into().expect("Wrong size");
@@ -164,9 +164,21 @@ pub mod core {
             HashSet::from_iter(squares.iter().copied())
         }
 
+        pub fn check_square_for_piece(&self, square: &Square) -> Option<&Piece> {
+            self.pieces.iter().find(|&p| p.square.pos == square.pos)
+        }
+
+        pub fn add_piece(mut self, piece: Piece) -> Self {
+            self.pieces.push(piece);
+            self
+        }
+
+        pub fn remove_piece() {
+
+        }
     }
 
-    impl<'a> fmt::Display for Board<'a> {
+    impl fmt::Display for Board {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let mut rank_rev = self.squares.clone();
             rank_rev.reverse();
@@ -180,7 +192,7 @@ pub mod core {
         }
     }
 
-    impl Piece<'_> {
+    impl Piece {
     }
 
 }
