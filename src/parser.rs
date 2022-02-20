@@ -36,6 +36,11 @@ pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
             if !is_fen_piece_char(*byte as char) { 
                 return  Err("FEN Parsing Error");
             };
+
+            match *byte as char {
+                '1'..='8' => { f_index += *byte - (b'1' + 1) ; continue; },
+                _ => ()
+            } 
             // TODO: if *byte in 1..8 skip as many
 
             // let piece = Piece{color: Color::White, figure: Piece::from_fen(byte).unwrap(), square: board.get_from_coord(r_index as u8, f_index as u8).unwrap()};
@@ -44,7 +49,6 @@ pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
             f_index += 1;
         };
     };
-    dbg!(pieces_vec);
     Ok(board)
 }
 
@@ -56,9 +60,9 @@ pub fn is_fen_piece_char(c: char) -> bool {
 // Board -> fen_str
 // Game -> fen_str
 
-impl Piece<'_> {
+impl Piece {
 
-    pub fn from_fen<'a>(s: char, pos: &'a Square) -> Result<Piece<'a>, &'a str> {
+    pub fn from_fen(s: char, pos: &Square) -> Result<Piece, &str> {
         // check if it is a valid FEN Piece character
 
         let fen_char: char = s.to_ascii_lowercase(); 
@@ -78,7 +82,7 @@ impl Piece<'_> {
             _ => Color::White,
         };
 
-        Ok(Piece { color: color, figure: figure, square: pos  })
+        Ok(Piece { color: color, figure: figure, square: *pos  })
     }
 
 
