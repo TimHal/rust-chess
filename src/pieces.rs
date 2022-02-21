@@ -14,4 +14,21 @@ impl Piece {
     fn get_available_squares_for_piece<Color, Figure>(&self, board: &Board) -> HashSet<&Square> {
         
     } 
+
+    fn print_piece(&self) -> String {
+        let str_repr = match self.figure {
+            Figure::Pawn => "p",
+            Figure::Rook => "r",
+            Figure::Knight => "n",
+            Figure::Bishop => "b",
+            Figure::Queen => "q",
+            Figure::King => "k"
+        };
+
+        if self.color == Color::White {
+            str_repr = tr_repr.to_ascii_uppercase();
+        }
+        
+        str_repr
+    }
 }
