@@ -13,6 +13,9 @@ mod tests {
         assert_eq!(&Square::from_str("f3"), board.get("f3").unwrap());
         assert_eq!(&Square::from_str("f3"), board.get_from_tup((5,2)).unwrap());
         assert_eq!(&Square::from_str("a1"), board.get_from_tup((0,0)).unwrap());
+        
+        let square = &Square::from_str("a3");
+        assert_eq!(square, board.get_from_square(square).unwrap());
     }
 
     #[test]
@@ -90,7 +93,6 @@ mod tests {
         
         for &piece in pieces.iter() {
             board.pieces.push(piece);
-            // board.add_piece(piece);
         }
 
         assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a3")).is_some());
@@ -100,7 +102,7 @@ mod tests {
         assert_eq!(false, board.check_square_for_piece(board.get_unchecked("h1")).is_some());
         assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a7")).is_some());
         assert_eq!(true, board.check_square_for_piece(board.get_unchecked("e6")).is_some());
-        
+        assert_eq!(pieces.len(), board.pieces.len());
     }
 
     #[test]
@@ -117,7 +119,22 @@ mod tests {
 
     #[test]
     fn pieces_pawn_available_squares() {
-        assert_eq!(1,1)
+        let board = &mut Board::new();
+        let pieces = vec! [ Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("a2")},
+                            Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("d3")},
+                            Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("d4")},
+                            Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("f2")},
+                            Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("f4")}];
+
+        for &piece in pieces.iter() {
+            board.pieces.push(piece);
+        }
+
+        // pawn from its starting square should be able to move one or two squares up
+        for curr_piece in pieces {
+            dbg!("{}", curr_piece.get_available_squares(board));
+        }
+        assert_eq!(1,1);
     }
     
     #[test]
@@ -139,6 +156,21 @@ mod tests {
     
     #[test]
     fn pieces_king_available_squares() {
+        assert_eq!(1,1)
+    }
+
+    #[test]
+    fn is_checkmate() {
+        assert_eq!(1,1)
+    }
+
+    #[test]
+    fn checked_king_available_squares() {
+        assert_eq!(1,1)
+    }
+
+    #[test]
+    fn pinned_piece_cannot_move() {
         assert_eq!(1,1)
     }
 }

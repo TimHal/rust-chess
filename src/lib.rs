@@ -1,8 +1,9 @@
 /// The core library for rust-chess. (WIP)
 pub mod parser;
+pub mod pieces;
 
 pub mod core {
-
+    
     use std::fmt;
     use std::collections::HashSet;
 
@@ -18,7 +19,7 @@ pub mod core {
     }
 
     #[derive(Debug, Clone)]
-    pub struct Board<> {
+    pub struct Board {
         pub squares: [[Square; 8]; 8],
         pub pieces: Vec<Piece>,
         pub is_valid: bool
@@ -103,6 +104,14 @@ pub mod core {
         pub fn get_unchecked(&self, index_str: &str) -> &Square {
             self.get(index_str).unwrap()
         }
+
+        pub fn get_from_square_unchecked(&self, square: &Square) -> &Square {
+            self.get_from_square(square).unwrap()
+        }
+
+        pub fn get_from_square(&self, square: &Square) -> Option<&Square> {
+            self.get(&String::from_iter([square.pos.0, square.pos.1])[..])
+        }
         
         pub fn get_from_coord(&self, rank_byte: u8, file_byte: u8) -> Option<&Square> {
             let rank_char = (b'a' + rank_byte) as char;
@@ -182,7 +191,9 @@ pub mod core {
 
     impl fmt::Display for Board {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            // TODO: refactor this
             let mut rank_rev = self.squares.clone();
+            // let str = String::new();
             rank_rev.reverse();
             for rank in rank_rev {
                 for file in rank {
