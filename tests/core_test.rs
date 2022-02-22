@@ -124,7 +124,9 @@ mod tests {
                             Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("d3")},
                             Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("d4")},
                             Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("f2")},
-                            Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("f4")}];
+                            Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("f4")},
+                            Piece {color: Color::Black, figure: Figure::Pawn, square: *board.get_unchecked("g5")},
+                            ];
 
         for &piece in pieces.iter() {
             board.pieces.push(piece);
