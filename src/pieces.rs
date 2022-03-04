@@ -97,7 +97,12 @@ impl Piece {
         self.get_directional_moves(board, directions)
     }
     fn get_available_squares_knight(&self, board: &Board) ->  HashSet<Square> {
-        HashSet::new()
+        let directions = (-2..=2).cartesian_product(-2..=2)
+            .filter(|sq| (sq.0 as i32).abs() + (sq.1 as i32).abs() == 3)
+            .collect();
+        // for more information about how knights move please see https://www.youtube.com/watch?v=gjMsHsd7N1Y
+        
+        self.get_directional_move(board, directions)
     }
     fn get_available_squares_bishop(&self, board: &Board) ->  HashSet<Square> {
         let directions = vec! [(1,1), (1, -1), (-1,1), (-1, -1)];
@@ -108,15 +113,46 @@ impl Piece {
     }
     
     fn get_available_squares_king(&self, board: &Board) ->  HashSet<Square> {
-        HashSet::new()
+        let directions = (-1..=1).cartesian_product(-1..=1)
+            .filter(|&dir| dir != (0,0))
+            .collect();
+        
+        self.get_directional_move(board, directions)
     }
     
     fn get_available_squares_queen(&self, board: &Board) ->  HashSet<Square> {
-        let directions = (-1..=1).cartesian_product(-1..=1).collect();
+        let directions = (-1..=1).cartesian_product(-1..=1)
+            .filter(|&dir| dir != (0,0))
+            .collect();
         // check if piece can move at all
 
         // testing how far the bishop can move in either direction
         self.get_directional_moves(board, directions)
+    }
+
+    fn get_directional_move(&self, board: &Board, directions: Vec<(i8, i8)>) -> HashSet<Square> {
+        // other than get_directional_moves this method only checks a single move for any given direction. Useful for knights and kings
+        // apart from that it works very much the same
+        let mut result = HashSet::new();
+        
+        // testing how far the piece can move in either direction
+        for direction in directions {
+            let mut curr_square = self.square;
+            if let Some(next_square) = curr_square.move_by(direction) {
+                // check that the square is not occupied
+                if let Some(other_piece) = board.check_square_for_piece(&next_square) {
+                    match other_piece.color == self.color {
+                        false => {
+                            result.insert(next_square);
+                        },
+                        _ => {} 
+                    }
+                }    
+                result.insert(next_square);
+            }
+        }
+
+        result
     }
 
     fn get_directional_moves(&self, board: &Board, directions: Vec<(i8, i8)>) -> HashSet<Square> {

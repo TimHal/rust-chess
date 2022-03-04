@@ -163,7 +163,13 @@ fn pieces_rook_available_squares() {
 }
 #[test]
 fn pieces_knight_available_squares() {
-    assert_eq!(1,1)
+    let mut board = common::empty_board();
+    let knight = Piece {color: Color::White, figure: Figure::Knight, square: *board.get_unchecked("e4")};
+    let knight_2 = Piece {color: Color::White, figure: Figure::Knight, square: *board.get_unchecked("a1")};
+    board.pieces.push(knight);
+    board.pieces.push(knight_2);
+    dbg!(knight.get_available_squares(&board));
+    dbg!(knight_2.get_available_squares(&board));
 }
 #[test]
 fn pieces_bishop_available_squares() {
@@ -179,7 +185,10 @@ fn pieces_queen_available_squares() {
 
 #[test]
 fn pieces_king_available_squares() {
-    assert_eq!(1,1)
+    let mut board = common::empty_board();
+    let king = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("a2")};
+    board.pieces.push(king);
+    dbg!(king.get_available_squares(&board));
 }
 
 #[test]
