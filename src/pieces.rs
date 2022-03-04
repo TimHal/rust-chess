@@ -22,7 +22,7 @@ impl Piece {
     }
 
     fn get_available_squares_pawn_white(&self, board: &Board) ->  HashSet<Square> {
-        let results = &mut HashSet::new();
+        let mut results = HashSet::new();
         let move_up_one = self.square.move_by((0,1)); 
         if move_up_one.is_some() {
             // check there is no piece on that square
@@ -56,7 +56,7 @@ impl Piece {
     }
 
     fn get_available_squares_pawn_black(&self, board: &Board) ->  HashSet<Square> {
-        let results = &mut HashSet::new();
+        let mut results = HashSet::new();
         let move_up_one = self.square.move_by((0,-1)); 
         if move_up_one.is_some() {
             // check there is no piece on that square
@@ -90,13 +90,61 @@ impl Piece {
     }
 
     fn get_available_squares_rook(&self, board: &Board) ->  HashSet<Square> {
-        HashSet::new()
+        let mut result = HashSet::new();
+        let directions = [(0,1), (0, -1), (1,0), (-1, 0)];
+        // check if piece can move at all
+
+        // testing how far the rook can move in either direction
+        for direction in directions {
+            let mut curr_square = self.square;
+            while let Some(next_square) = curr_square.move_by(direction) {
+                // check that the square is not occupied
+                if let Some(other_piece) = board.check_square_for_piece(&next_square) {
+                    match other_piece.color == self.color {
+                        false => {
+                            result.insert(next_square);
+                        },
+                        _ => {} 
+                    }
+                    break;
+                }
+                
+                result.insert(next_square);
+                curr_square = next_square;
+            }
+        }
+
+        result
     }
     fn get_available_squares_knight(&self, board: &Board) ->  HashSet<Square> {
         HashSet::new()
     }
     fn get_available_squares_bishop(&self, board: &Board) ->  HashSet<Square> {
-        HashSet::new()
+        let mut result = HashSet::new();
+        let directions = [(1,1), (1, -1), (-1,1), (-1, -1)];
+        // check if piece can move at all
+
+        // testing how far the bishop can move in either direction
+        for direction in directions {
+            let mut curr_square = self.square;
+            while let Some(next_square) = curr_square.move_by(direction) {
+                // check that the square is not occupied
+                if let Some(other_piece) = board.check_square_for_piece(&next_square) {
+                    match other_piece.color == self.color {
+                        false => {
+                            result.insert(next_square);
+                        },
+                        _ => {} 
+                    }
+                    break;
+                }
+                
+                result.insert(next_square);
+                curr_square = next_square;
+            }
+        }
+
+        result
     }
     
     fn get_available_squares_king(&self, board: &Board) ->  HashSet<Square> {
@@ -105,6 +153,33 @@ impl Piece {
     
     fn get_available_squares_queen(&self, board: &Board) ->  HashSet<Square> {
         HashSet::new()
+    }
+
+    fn get_directional_moves(&self, board: &Board, directions: Vec<(i8, i8)>) -> HashSet<Square> {
+        // check moves in each direction step-by-step until there is no square at curr_pos + direction or the square is occupied
+        let mut result = HashSet::new();
+        
+        // testing how far the piece can move in either direction
+        for direction in directions {
+            let mut curr_square = self.square;
+            while let Some(next_square) = curr_square.move_by(direction) {
+                // check that the square is not occupied
+                if let Some(other_piece) = board.check_square_for_piece(&next_square) {
+                    match other_piece.color == self.color {
+                        false => {
+                            result.insert(next_square);
+                        },
+                        _ => {} 
+                    }
+                    break;
+                }
+                
+                result.insert(next_square);
+                curr_square = next_square;
+            }
+        }
+
+        result
     }
 
     fn print_piece(&self) -> String {
