@@ -1,6 +1,7 @@
 use crate::core::{Figure, Board, Piece, Color, Square};
 
 use std::collections::HashSet;
+use itertools::Itertools;
 
 impl Piece {
        
@@ -17,7 +18,6 @@ impl Piece {
             (Figure::Bishop, _) => self.get_available_squares_bishop(board),
             (Figure::King, _) => self.get_available_squares_king(board),
             (Figure::Queen, _) => self.get_available_squares_queen(board),
-            _ => panic!("Unrecognized piece type at get_available_squares()!"),
         }
     }
 
@@ -90,61 +90,21 @@ impl Piece {
     }
 
     fn get_available_squares_rook(&self, board: &Board) ->  HashSet<Square> {
-        let mut result = HashSet::new();
-        let directions = [(0,1), (0, -1), (1,0), (-1, 0)];
+        let directions = vec! [(0,1), (0, -1), (1,0), (-1, 0)];
         // check if piece can move at all
 
         // testing how far the rook can move in either direction
-        for direction in directions {
-            let mut curr_square = self.square;
-            while let Some(next_square) = curr_square.move_by(direction) {
-                // check that the square is not occupied
-                if let Some(other_piece) = board.check_square_for_piece(&next_square) {
-                    match other_piece.color == self.color {
-                        false => {
-                            result.insert(next_square);
-                        },
-                        _ => {} 
-                    }
-                    break;
-                }
-                
-                result.insert(next_square);
-                curr_square = next_square;
-            }
-        }
-
-        result
+        self.get_directional_moves(board, directions)
     }
     fn get_available_squares_knight(&self, board: &Board) ->  HashSet<Square> {
         HashSet::new()
     }
     fn get_available_squares_bishop(&self, board: &Board) ->  HashSet<Square> {
-        let mut result = HashSet::new();
-        let directions = [(1,1), (1, -1), (-1,1), (-1, -1)];
+        let directions = vec! [(1,1), (1, -1), (-1,1), (-1, -1)];
         // check if piece can move at all
 
         // testing how far the bishop can move in either direction
-        for direction in directions {
-            let mut curr_square = self.square;
-            while let Some(next_square) = curr_square.move_by(direction) {
-                // check that the square is not occupied
-                if let Some(other_piece) = board.check_square_for_piece(&next_square) {
-                    match other_piece.color == self.color {
-                        false => {
-                            result.insert(next_square);
-                        },
-                        _ => {} 
-                    }
-                    break;
-                }
-                
-                result.insert(next_square);
-                curr_square = next_square;
-            }
-        }
-
-        result
+        self.get_directional_moves(board, directions)
     }
     
     fn get_available_squares_king(&self, board: &Board) ->  HashSet<Square> {
@@ -152,7 +112,11 @@ impl Piece {
     }
     
     fn get_available_squares_queen(&self, board: &Board) ->  HashSet<Square> {
-        HashSet::new()
+        let directions = (-1..=1).cartesian_product(-1..=1).collect();
+        // check if piece can move at all
+
+        // testing how far the bishop can move in either direction
+        self.get_directional_moves(board, directions)
     }
 
     fn get_directional_moves(&self, board: &Board, directions: Vec<(i8, i8)>) -> HashSet<Square> {

@@ -171,7 +171,10 @@ fn pieces_bishop_available_squares() {
 }
 #[test]
 fn pieces_queen_available_squares() {
-    assert_eq!(1,1)
+    let mut board = common::empty_board();
+    let queen = Piece {color: Color::White, figure: Figure::Queen, square: *board.get_unchecked("a2")};
+    board.pieces.push(queen);
+    dbg!(queen.get_available_squares(&board));
 }
 
 #[test]
