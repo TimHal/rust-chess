@@ -56,7 +56,37 @@ impl Piece {
     }
 
     fn get_available_squares_pawn_black(&self, board: &Board) ->  HashSet<Square> {
-        HashSet::new()
+        let results = &mut HashSet::new();
+        let move_up_one = self.square.move_by((0,-1)); 
+        if move_up_one.is_some() {
+            // check there is no piece on that square
+            if board.check_square_for_piece(board.get_from_square_unchecked(&move_up_one.unwrap())).is_none() {
+                results.insert(*board.get_from_square_unchecked(&move_up_one.unwrap()));
+
+                let move_up_two = move_up_one.unwrap().move_by((0,-1));
+                if self.square.pos.1 == '2' && move_up_two.is_some() {
+                    if board.check_square_for_piece(board.get_from_square_unchecked(&move_up_two.unwrap())).is_none() {
+                        results.insert(*board.get_from_square_unchecked(&move_up_two.unwrap()));
+                    }
+                }
+            }
+        }
+
+        // check if the pawn can hit either diagonal square
+        for direction in [(1,-1), (-1,-1)] {
+            let candidate_square = self.square.move_by(direction);
+            if candidate_square.is_none() {continue;}
+            match board.check_square_for_piece(&candidate_square.unwrap()) {
+                Some(piece) => {
+                    if piece.color != self.color {
+                        results.insert(*board.get_from_square_unchecked(&candidate_square.unwrap()));
+                    }
+                },
+                None => continue,
+            }
+        }
+
+        results.clone()
     }
 
     fn get_available_squares_rook(&self, board: &Board) ->  HashSet<Square> {
