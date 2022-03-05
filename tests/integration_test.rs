@@ -205,3 +205,18 @@ fn checked_king_available_squares() {
 fn pinned_piece_cannot_move() {
     assert_eq!(1,1)
 }
+
+#[test]
+fn check_threefold_repitition() {
+    assert_eq!(1,1)
+}
+
+#[test]
+fn check_insufficient_material() {
+    assert_eq!(1,1)
+}
+
+#[test]
+fn check_en_passant_move() {
+    assert_eq!(1,1)
+}
