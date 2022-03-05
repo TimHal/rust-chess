@@ -1,6 +1,6 @@
 # rust_chess
 
-A chess library written in Rust. This is _not_ a feature-complete chess game, rather a library to set up boards, move pieces and check fro states (such as check, checkmate, en-passant moves, possible moves etc).
+A chess library written in Rust. This is _not_ a feature-complete chess game, rather a library to set up boards, move pieces and check for states (such as check, checkmate, en-passant moves, castling etc).
 
 Please note: This is a *Work In Progress* and not ready for production by any means. Even when completed, take into consideration that the main purpose of this library for me is to learn Rust and get familiar with it's concepts, so please do not expect top-quality code here.
 
