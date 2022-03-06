@@ -232,21 +232,20 @@ fn pieces_king_available_squares() {
 }
 
 #[test]
-fn is_check() {
+fn is_attacked() {
     let mut board = common::empty_board();
-    let pawn = Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("a2")};
-    let pawn_2 = Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("b6")};
-    let rook = Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("h4")};
-    let king = Piece {color: Color::Black, figure: Figure::King, square: *board.get_unchecked("a4")};
-    board.pieces.extend_from_slice(&[pawn, pawn_2, king, rook]);
-    println!("is check? {}", board.is_attacked(king));
-    assert_eq!(1,1);
+    let pb2 = Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("b2")};
+    let kd1 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("d1")};
+
+    let kc3 = Piece {color: Color::Black, figure: Figure::King, square: *board.get_unchecked("c3")};
+
+    board.pieces.extend_from_slice(&[pb2, kd1, kc3]);
+    assert_eq!(true, board.is_attacked(pb2));
+    assert_eq!(true, board.is_attacked(kc3));
+    assert_eq!(false, board.is_attacked(kd1));
+    
 }
 
-#[test]
-fn is_checkmate() {
-    assert_eq!(1,1)
-}
 
 #[test]
 fn checked_king_available_squares() {
@@ -258,22 +257,3 @@ fn pinned_piece_cannot_move() {
     assert_eq!(1,1)
 }
 
-#[test]
-fn check_threefold_repitition() {
-    assert_eq!(1,1)
-}
-
-#[test]
-fn check_insufficient_material() {
-    assert_eq!(1,1)
-}
-
-#[test]
-fn check_en_passant_move() {
-    assert_eq!(1,1)
-}
-
-#[test]
-fn check_fifty_move_rule() {
-
-}
