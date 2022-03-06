@@ -187,6 +187,16 @@ pub mod core {
             self.pieces.retain(|p| *p != piece);
             self
         }
+
+        pub fn is_attacked(&self, piece: Piece) -> bool {
+            // get pieces of other color
+            // combine their possible squares
+            // check if 'piece' position is in that set
+            self.pieces.iter()
+                .filter(|p| p.color != piece.color)
+                .flat_map(|p| p.get_attacked_squares(&self))
+                .find(|&sq| sq == piece.square).is_some()    
+        }
     }
 
     impl fmt::Display for Board {
@@ -197,9 +207,9 @@ pub mod core {
             rank_rev.reverse();
             for rank in rank_rev {
                 for file in rank {
-                    write!(f, "{} ", file);
+                    write!(f, "{} ", file)?;
                 }
-                writeln!(f, "");
+                writeln!(f, "")?;
             }
             write!(f, "")
         }

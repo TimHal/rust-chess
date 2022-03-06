@@ -84,16 +84,13 @@ fn square_arithmetics() {
 
 #[test]
 fn board_check_square_for_piece() {
-    let board = &mut Board::new();
-    let pieces = vec! [Piece {color: Color::Black, figure: Figure::Rook, square: *board.get_unchecked("a3")},
-                        Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("a8")},
-                        Piece {color: Color::Black, figure: Figure::Pawn, square: *board.get_unchecked("a7")},
-                        Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("e6")}];
+    let mut board = common::empty_board();
+    let pieces = [Piece {color: Color::Black, figure: Figure::Rook, square: *board.get_unchecked("a3")},
+    Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("a8")},
+    Piece {color: Color::Black, figure: Figure::Pawn, square: *board.get_unchecked("a7")},
+    Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("e6")}];
+    board.pieces.extend_from_slice(&pieces);
     
-    for &piece in pieces.iter() {
-        board.pieces.push(piece);
-    }
-
     assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a3")).is_some());
     assert_eq!(false, board.check_square_for_piece(board.get_unchecked("b2")).is_some());
     assert_eq!(true, board.check_square_for_piece(board.get_unchecked("b2")).is_none());
@@ -153,42 +150,97 @@ fn pieces_pawn_available_squares() {
 #[test]
 fn pieces_rook_available_squares() {
     let mut board = common::empty_board();
-    let rook = Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("d4")};
-    let rook_2 = Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("d5")};
-    let rook_3 = Piece {color: Color::Black, figure: Figure::Rook, square: *board.get_unchecked("d3")};
-    board.pieces.push(rook);
-    board.pieces.push(rook_2);
-    board.pieces.push(rook_3);
-    dbg!(rook.get_available_squares(&board));
+    let pieces =  [Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("d4")},
+    Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("d5")},
+    Piece {color: Color::Black, figure: Figure::Rook, square: *board.get_unchecked("d3")}];
+    board.pieces.extend_from_slice(&pieces);
+    let expected_squares_white_rook: HashSet<Square> = HashSet::from(
+        [*board.get_unchecked("d3"), *board.get_unchecked("a4"), *board.get_unchecked("b4"), *board.get_unchecked("c4"), 
+        *board.get_unchecked("e4"), *board.get_unchecked("f4"), *board.get_unchecked("g4"), *board.get_unchecked("h4")]
+    );
+    let expected_squares_black_rook: HashSet<Square> = HashSet::from(
+        [*board.get_unchecked("d1"),*board.get_unchecked("d2"), *board.get_unchecked("d4"), *board.get_unchecked("a3"), *board.get_unchecked("b3"), *board.get_unchecked("c3"), 
+        *board.get_unchecked("e3"), *board.get_unchecked("f3"), *board.get_unchecked("g3"), *board.get_unchecked("h3")]
+    );
+
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("d4")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&expected_squares_white_rook).collect::<HashSet<&Square>>().is_empty());   
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("d3")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&expected_squares_black_rook).collect::<HashSet<&Square>>().is_empty());   
 }
 #[test]
 fn pieces_knight_available_squares() {
     let mut board = common::empty_board();
-    let knight = Piece {color: Color::White, figure: Figure::Knight, square: *board.get_unchecked("e4")};
-    let knight_2 = Piece {color: Color::White, figure: Figure::Knight, square: *board.get_unchecked("a1")};
-    board.pieces.push(knight);
-    board.pieces.push(knight_2);
-    dbg!(knight.get_available_squares(&board));
-    dbg!(knight_2.get_available_squares(&board));
+    let pieces = [Piece {color: Color::White, figure: Figure::Knight, square: *board.get_unchecked("e4")},
+     Piece {color: Color::Black, figure: Figure::Knight, square: *board.get_unchecked("a1")}];
+    board.pieces.extend_from_slice(&pieces);
+    let ne4_expected = common::sqrs(&board, "d2, f2, c3, g3, c5, g5, d6, f6");
+    let na1_expected = common::sqrs(&board, "c2, b3");
+
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("e4")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&ne4_expected).collect::<HashSet<&Square>>().is_empty());
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("a1")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&na1_expected).collect::<HashSet<&Square>>().is_empty());
 }
 #[test]
 fn pieces_bishop_available_squares() {
-    assert_eq!(1,1)
+    let mut board = common::empty_board();
+    let pieces = [Piece {color: Color::Black, figure: Figure::Bishop, square: *board.get_unchecked("a1")},
+        Piece {color: Color::White, figure: Figure::Bishop, square: *board.get_unchecked("c3")},
+        Piece {color: Color::White, figure: Figure::Bishop, square: *board.get_unchecked("b6")}];
+   
+    board.pieces.extend_from_slice(&pieces);
+
+    let ba1_expected = common::sqrs(&board, "b2, c3");
+    let bc3_expected = common::sqrs(&board, "a1, b2, b4, a5, d2, e1, d4, e5, f6, g7, h8");
+    let bb6_expected = common::sqrs(&board, "a5, a7, c7, d8, c5, d4, e3, f2, g1");
+
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("a1")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&ba1_expected).collect::<HashSet<&Square>>().is_empty());
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("c3")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&bc3_expected).collect::<HashSet<&Square>>().is_empty());
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("b6")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&bb6_expected).collect::<HashSet<&Square>>().is_empty());
 }
 #[test]
 fn pieces_queen_available_squares() {
     let mut board = common::empty_board();
     let queen = Piece {color: Color::White, figure: Figure::Queen, square: *board.get_unchecked("a2")};
     board.pieces.push(queen);
-    dbg!(queen.get_available_squares(&board));
+    let qa2_expected = common::sqrs(&board, "a1, a3, a4, a5, a6, a7, a8, b1, b2, b3, c4, d5, e6, f7, g8, c2, d2, e2, f2, g2, h2");
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("a2")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&qa2_expected).collect::<HashSet<&Square>>().is_empty());
 }
 
 #[test]
 fn pieces_king_available_squares() {
     let mut board = common::empty_board();
-    let king = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("a2")};
+    let king = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("b2")};
     board.pieces.push(king);
-    dbg!(king.get_available_squares(&board));
+    let kb2_expected = common::sqrs(&board, "a1, a2, a3, b1, b3, c1, c2, c3");
+    assert_eq!(true, 
+        board.check_square_for_piece(board.get_unchecked("b2")).unwrap()
+            .get_available_squares(&board).symmetric_difference(&kb2_expected).collect::<HashSet<&Square>>().is_empty());
+}
+
+#[test]
+fn is_check() {
+    let mut board = common::empty_board();
+    let pawn = Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("a2")};
+    let pawn_2 = Piece {color: Color::White, figure: Figure::Pawn, square: *board.get_unchecked("b6")};
+    let rook = Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("h4")};
+    let king = Piece {color: Color::Black, figure: Figure::King, square: *board.get_unchecked("a4")};
+    board.pieces.extend_from_slice(&[pawn, pawn_2, king, rook]);
+    println!("is check? {}", board.is_attacked(king));
+    assert_eq!(1,1);
 }
 
 #[test]
@@ -219,4 +271,9 @@ fn check_insufficient_material() {
 #[test]
 fn check_en_passant_move() {
     assert_eq!(1,1)
+}
+
+#[test]
+fn check_fifty_move_rule() {
+
 }

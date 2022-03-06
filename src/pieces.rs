@@ -21,6 +21,15 @@ impl Piece {
         }
     }
 
+    // Get the squares which can be reached by this piece when performing a capturing move
+    pub fn get_attacked_squares(&self, board: &Board) -> HashSet<Square> {
+        self.get_available_squares(&board).iter()
+            .filter_map(|sq| board.check_square_for_piece(sq))
+            .filter(|p| p.color != self.color)
+            .map(|p| p.square)
+            .collect::<HashSet<Square>>()
+}
+
     fn get_available_squares_pawn_white(&self, board: &Board) ->  HashSet<Square> {
         let mut results = HashSet::new();
         let move_up_one = self.square.move_by((0,1)); 

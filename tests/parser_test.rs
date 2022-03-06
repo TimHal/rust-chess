@@ -63,6 +63,11 @@ mod tests {
     assert_eq!(1, 1);
    }
 
+   #[test]
+   fn test_fen_export() {
+       assert_eq!(1,1)
+   }
+
 
         
 }
