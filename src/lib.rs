@@ -1,6 +1,7 @@
 /// The core library for rust-chess. (WIP)
 pub mod parser;
 pub mod pieces;
+pub mod game;
 
 pub mod core {
     
