@@ -8,10 +8,10 @@ pub mod core {
     use std::fmt;
     use std::collections::HashSet;
 
-    #[derive(Debug, Clone, Copy, PartialEq)]
+    #[derive(Debug, Clone, Copy, PartialEq, Hash)]
     pub enum Color { Black, White }
 
-    #[derive(Debug, Clone, Copy, PartialEq)]
+    #[derive(Debug, Clone, Copy, PartialEq, Hash)]
     pub enum Figure { Pawn, Rook, Knight, Bishop, Queen, King }
     
     #[derive(Debug, Clone, Copy, Eq, Hash)]
@@ -26,7 +26,7 @@ pub mod core {
         pub is_valid: bool
     }
 
-    #[derive(Debug, Clone, Copy, PartialEq)]
+    #[derive(Debug, Clone, Copy, Hash)]
     pub struct Piece {
         pub color: Color,
         pub figure: Figure,
@@ -218,6 +218,16 @@ pub mod core {
 
     impl Piece {
     }
+
+    impl PartialEq for Piece {
+        fn eq(&self, other: &Self) -> bool {
+            self.color == other.color &&
+            self.figure == other.figure &&
+            self.square == other.square
+        }
+    }
+
+    impl Eq for Piece {}
 
 }
 
