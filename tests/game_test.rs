@@ -3,6 +3,7 @@ use rust_chess::game::*;
 #[test]
 fn create_game() {
     let game = Game::new();
+    assert_eq!(1,1)
 }
 
 #[test]
