@@ -13,7 +13,7 @@ pub mod core {
 
     #[derive(Debug, Clone, Copy, PartialEq, Hash)]
     pub enum Figure { Pawn, Rook, Knight, Bishop, Queen, King }
-    
+
     #[derive(Debug, Clone, Copy, Eq, Hash)]
     pub struct Square {
         pub pos: (char, char)
@@ -42,7 +42,7 @@ pub mod core {
         }
 
         pub fn move_by(&self, delta: (i8,i8)) -> Option<Square> {
-            let delta_f = ((self.pos.0 as i8) - ('a' as i8)) + delta.0; 
+            let delta_f = ((self.pos.0 as i8) - ('a' as i8)) + delta.0;
             let delta_r = ((self.pos.1 as i8) - ('1' as i8)) + delta.1;
 
             if delta_f >= 0 && delta_f >= 0 {
@@ -60,7 +60,7 @@ pub mod core {
 
     impl fmt::Display for Square {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "[{}{}]", self.pos.0, self.pos.1)
+            write!(f, "{}{}", self.pos.0, self.pos.1)
         }
     }
 
@@ -95,8 +95,8 @@ pub mod core {
             // is valid notation string?
             let lowercase = index_str.to_ascii_lowercase();
             let bytes = lowercase.trim().as_bytes();
-            if !bytes.len() == 2 { 
-                return None 
+            if !bytes.len() == 2 {
+                return None
             } else {
                 let res = match (bytes[0] as char, bytes[1] as char) {
                     ('a'..='h', '1'..='8') => Some(&self.squares[(bytes[1] as u8 - b'1') as usize]
@@ -118,11 +118,11 @@ pub mod core {
         pub fn get_from_square(&self, square: &Square) -> Option<&Square> {
             self.get(&String::from_iter([square.pos.0, square.pos.1])[..])
         }
-        
+
         pub fn get_from_coord(&self, rank_byte: u8, file_byte: u8) -> Option<&Square> {
             let rank_char = (b'a' + rank_byte) as char;
             let file_char = (b'1' + file_byte) as char;
-            
+
             self.get(&String::from_iter([rank_char, file_char]))
         }
 
@@ -145,7 +145,7 @@ pub mod core {
         pub fn squares_as_set(&self) -> HashSet<&Square> {
             HashSet::from_iter(self.squares_as_vec().iter().cloned())
         }
-        
+
         pub fn get_rank_from_square(&self, square: &Square) -> HashSet<&Square> {
             let rank: Vec<&Square> = self.squares_as_vec().iter().map(|sq| *sq).filter(|&sq| sq.pos.1 == square.pos.1).collect();
             HashSet::from_iter(rank.iter().copied())
@@ -201,7 +201,7 @@ pub mod core {
             self.pieces.iter()
                 .filter(|p| p.color != piece.color)
                 .flat_map(|p| p.get_attacked_squares(&self))
-                .find(|&sq| sq == piece.square).is_some()    
+                .find(|&sq| sq == piece.square).is_some()
         }
     }
 

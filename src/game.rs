@@ -1,8 +1,8 @@
-use crate::core::{Board, Piece, Color, Color::*, Square, Figure::*};
+use crate::core::{Board, Piece, Color, Color::*, Square, Figure};
 
 use std::collections::hash_set::HashSet;
+use std::fmt::Display;
 use itertools::Itertools;
-
 
 pub struct Game {
     meta: Option<GameMeta>,
@@ -91,8 +91,8 @@ impl State {
         let possible_en_passant_moves: HashSet<(Piece, Square)> = HashSet::new();
         let mut castling_privileges: HashSet<(Piece, Piece)> = HashSet::new();
         for rook in board.pieces.iter()
-                        .filter(|&p| p.figure == Rook) {
-            let king = board.pieces.iter().find(|&k| k.color == rook.color && k.figure == King).unwrap();
+                        .filter(|&p| p.figure == Figure::Rook) {
+            let king = board.pieces.iter().find(|&k| k.color == rook.color && k.figure == Figure::King).unwrap();
             castling_privileges.insert((*king, *rook));
         }
         // let mut castling_privileges: HashSet<(Piece, Piece)> = board.pieces.iter()
@@ -105,6 +105,43 @@ impl State {
             possible_en_passant_moves: possible_en_passant_moves }
     }
 
+}
+
+impl Move {
+
+    pub fn to_str(&self) -> String {
+        let str = String::new();
+        
+        let piece_letter = match self.piece.figure {
+            Figure::Pawn => return self.target_square.to_string(),
+            Figure::Rook => "R",
+            Figure::Knight => "N",
+            Figure::Bishop => "B",
+            Figure::Queen => "Q",
+            Figure::King => "K"
+        };
+
+        String::from_iter([piece_letter, &self.piece.square.to_string()[..], &self.target_square.to_string()[..]])
+
+    }
+
+}
+
+impl std::fmt::Display for Move {
+    
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let piece_letter = match self.piece.figure {
+            Figure::Pawn => return write!(f, "{}", self.target_square.to_string()),
+            Figure::Rook => "R",
+            Figure::Knight => "N",
+            Figure::Bishop => "B",
+            Figure::Queen => "Q",
+            Figure::King => "K"
+        };
+        
+        write!(f, "{}{}-{}", piece_letter, self.piece.square, self.target_square)
+    }
+    
 }
 
 impl GameMeta {
