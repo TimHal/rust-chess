@@ -154,7 +154,9 @@ impl Piece {
                         false => {
                             result.insert(next_square);
                         },
-                        _ => {} 
+                        _ => {
+                            continue
+                        } 
                     }
                 }    
                 result.insert(next_square);

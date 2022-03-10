@@ -4,9 +4,9 @@ pub mod pieces;
 pub mod game;
 
 pub mod core {
-    
     use std::fmt;
     use std::collections::HashSet;
+    use crate::parser::*;
 
     #[derive(Debug, Clone, Copy, PartialEq, Hash)]
     pub enum Color { Black, White }
@@ -84,6 +84,11 @@ pub mod core {
                 }
             }
             Board {squares: squares, is_valid: true, pieces: Vec::new()}
+        }
+
+        pub fn new_in_standard_position() -> Board {
+            let std_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            parse_fen(std_fen).unwrap()
         }
 
         pub fn get(&self, index_str: &str) -> Option<&Square> {

@@ -16,7 +16,12 @@ pub fn setup_board_in_std_start_position() -> Board {
 // utility function for quicker testing, provide a ','-separated list of squares
 pub fn sqrs(board: &Board, squares: &str) -> HashSet<Square> {
     
-    let sq_refs: HashSet<Square> = squares.split(",")  
-        .map(|sq| *board.get_unchecked(sq.trim())).collect::<HashSet<Square>>();
+    let sq_split = squares.split(",").collect::<Vec<&str>>();
+    if sq_split.len() == 0 {
+        return HashSet::new();
+    }
+
+    let sq_refs: HashSet<Square> = sq_split.iter()
+        .map(|sq| *board.get_unchecked(sq.trim())).collect();
     sq_refs
 }

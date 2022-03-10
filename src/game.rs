@@ -4,20 +4,20 @@ use std::collections::hash_set::HashSet;
 use itertools::Itertools;
 
 
-pub struct Game<'a> {
+pub struct Game {
     meta: Option<GameMeta>,
     board: Board,
-    state: State<'a>,
+    state: State,
     moves: Vec<Move>,
 }
 
-pub struct State<'a> {
+pub struct State {
     // en-passant, castling etc is all done via the game, not the pieces or board as it requires knowledge about game state
     turn: Color, // the color to make the next move
     result: Option<GameResult>,
-    check: Option<&'a Piece>, // can or can not be a king in check
-    castling_privileges: HashSet<(&'a Piece, &'a Piece)>, 
-    possible_en_passant_moves: HashSet<(&'a Piece, &'a Square)>, // the pawn to take en-passant and the target square
+    check: Option<Piece>, // can or can not be a king in check
+    castling_privileges: HashSet<(Piece, Piece)>, 
+    possible_en_passant_moves: HashSet<(Piece, Square)>, // the pawn to take en-passant and the target square
 }
 
 pub enum GameResult { WhiteWin, BlackWin, Draw }
@@ -30,10 +30,11 @@ pub struct GameTreeNode {
     
 }
 
+#[derive(Debug, Hash, Eq, PartialEq)]
 pub struct Move {
     piece: Piece,
     target_square: Square,
-    variations: Vec<Variation>
+    // variations: Vec<Variation>
 }
 
 pub struct MoveMeta {
@@ -44,11 +45,11 @@ pub struct Variation {
     
 }
 
-impl Game<'_> {
+impl Game {
 
     pub fn new() -> Self {
 
-        let board = Board::new();
+        let board = Board::new_in_standard_position();
         let state = State::new(&board);
         let meta = GameMeta::new();
         let moves: Vec<Move> = vec! [];
@@ -62,7 +63,14 @@ impl Game<'_> {
 
     pub fn get_moves(&self, color: Color) -> HashSet<Move> {
         
-        let result: HashSet<Move> = HashSet::new();
+        let mut result: HashSet<Move> = HashSet::new();
+        
+        for piece in self.board.pieces.iter().filter(|p| p.color == color).collect::<Vec<&Piece>>() {
+            for target_square in &piece.get_available_squares(&self.board) {
+                result.insert(Move {piece: *piece, target_square: *target_square});
+            }
+        }
+        
         result
         // get available moves for all pieces
         
@@ -76,17 +84,22 @@ impl Game<'_> {
 
 }
 
-impl State<'_> {
+impl State {
 
     pub fn new(board: &Board) -> Self {
         
-        let possible_en_passant_moves: HashSet<(&Piece, &Square)> = HashSet::new();
-        let castling_privileges: HashSet<(&Piece, &Piece)> = HashSet::new();
-        // let mut castling_privileges: HashSet<(&Piece, &Piece)> = board.pieces.iter<'a, &Piece>()
+        let possible_en_passant_moves: HashSet<(Piece, Square)> = HashSet::new();
+        let mut castling_privileges: HashSet<(Piece, Piece)> = HashSet::new();
+        for rook in board.pieces.iter()
+                        .filter(|&p| p.figure == Rook) {
+            let king = board.pieces.iter().find(|&k| k.color == rook.color && k.figure == King).unwrap();
+            castling_privileges.insert((*king, *rook));
+        }
+        // let mut castling_privileges: HashSet<(Piece, Piece)> = board.pieces.iter()
         //         .filter(|p| p.figure == King || p.figure == Rook) // get the kings and rooks
         //         .tuple_combinations()
-        //         .filter(|(a,b)| (a.figure == King || b.figure == King) && (a.color == b.color))
-        //         .collect();
+        //         .filter(|(&a,&b)| (a.figure == King || b.figure == King) && (a.color == b.color))
+        //         .collect::<HashSet<(Piece, Piece)>>();
         State { turn: White, result: None, check: None, 
             castling_privileges: castling_privileges, 
             possible_en_passant_moves: possible_en_passant_moves }

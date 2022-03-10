@@ -229,6 +229,18 @@ fn pieces_king_available_squares() {
     assert_eq!(true, 
         board.check_square_for_piece(board.get_unchecked("b2")).unwrap()
             .get_available_squares(&board).symmetric_difference(&kb2_expected).collect::<HashSet<&Square>>().is_empty());
+
+    // Bug: King can move on occupied squares
+    board = common::empty_board();
+    let kd1 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("d1")};
+    let bc1 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("c1")};
+    let bc2 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("c2")};
+    let bd2 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("d2")};
+    let be1 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("e1")};
+    let be2 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("e2")};
+
+    board.pieces.extend( vec! [kd1, bc1, bc2, bd2, be1, be2]);
+    assert_eq!(true,  board.check_square_for_piece(board.get_unchecked("d1")).unwrap().get_available_squares(&board).is_empty());
 }
 
 #[test]

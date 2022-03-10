@@ -1,8 +1,11 @@
-use rust_chess::game::*;
+use rust_chess::{core::Color, game::{Game}};
+
 
 #[test]
 fn create_game() {
     let game = Game::new();
+    dbg!(game.get_moves(Color::White));
+    dbg!(game.get_moves(Color::White).len());
     assert_eq!(1,1)
 }
 
