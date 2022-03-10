@@ -1,11 +1,12 @@
+use itertools::Itertools;
 use rust_chess::{core::Color, game::{Game}};
 
 
 #[test]
 fn create_game() {
     let game = Game::new();
-    for move_ in game.get_moves(Color::White) {
-        println!("{}", move_.to_string());
+    for move_ in game.get_moves(Color::White).iter().map(|m| m.to_str()).sorted() {
+        println!("{}", move_);
     }
     dbg!(game.get_moves(Color::White).len());
     assert_eq!(1,1)
