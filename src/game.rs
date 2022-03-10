@@ -38,7 +38,7 @@ pub struct Move {
 }
 
 pub struct MoveMeta {
-    // move time, comments, engine evaluation etc
+    // flags, move time, comments, engine evaluation etc
 }
 
 pub struct Variation {
@@ -80,6 +80,8 @@ impl Game {
         // extend with en-passant moves
 
         // extend with promotion moves
+
+        // set move meta information, if applicable
     }
 
 }
