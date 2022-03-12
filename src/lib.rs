@@ -183,14 +183,26 @@ pub mod core {
             self.pieces.iter().find(|&p| p.square.pos == square.pos)
         }
 
+        pub fn check_square_for_piece_mut(&mut self, square: &Square) -> Option<&mut Piece> {
+            self.pieces.iter_mut().find(|p| p.square.pos == square.pos)
+        }
+
         pub fn add_piece(&mut self, piece: Piece) -> &Self {
             self.pieces.push(piece);
             self
         }
 
-        pub fn remove_piece(&mut self, piece: Piece) -> &Self {
+        pub fn remove_piece(&mut self, piece: &Piece) -> &mut Self {
             // find piece index in vec
-            self.pieces.retain(|p| *p != piece);
+            self.pieces.retain(|p| *p != *piece);
+            self
+        }
+
+        pub fn replace_piece_with(&mut self, square: Square, piece: &mut Piece) -> &mut Self {
+            if let Some(p) = self.check_square_for_piece(&square) {
+                self.remove_piece(piece);
+            }
+            piece.square = square;
             self
         }
 

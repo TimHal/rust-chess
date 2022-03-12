@@ -4,6 +4,10 @@ use std::collections::hash_set::HashSet;
 use std::fmt::Display;
 use itertools::Itertools;
 
+pub struct GameBuilder {
+    // ?
+}
+
 pub struct Game {
     meta: Option<GameMeta>,
     board: Board,
@@ -30,6 +34,9 @@ pub struct GameTreeNode {
     
 }
 
+pub struct MoveBuilder {
+
+}
 #[derive(Debug, Hash, Eq, PartialEq)]
 pub struct Move {
     piece: Piece,
@@ -57,8 +64,21 @@ impl Game {
         Game {board: board, state: state, meta: Some(meta), moves: moves}
     }
 
-    pub fn make_move(&self, move_: &Move) -> Result<&Self, &str> {
-        Ok(self)
+    pub fn make_move<'a>(&'a mut self, move_: &Move) -> &'a mut Self {
+        // check move validity?
+
+        // get moving piece(s)
+        let piece = self.board.check_square_for_piece_mut(&move_.piece.square).unwrap();
+
+        // remove target piece, if it is a striking move
+        self.board.replace_piece_with(move_.target_square, piece);
+
+        // promotion?
+        dbg!(&self.board);
+
+        // recalculate checks, privileges etc
+
+        self
     }
 
     pub fn get_moves(&self, color: Color) -> HashSet<Move> {
