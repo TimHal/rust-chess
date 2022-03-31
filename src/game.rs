@@ -19,7 +19,7 @@ pub struct State {
     // en-passant, castling etc is all done via the game, not the pieces or board as it requires knowledge about game state
     turn: Color, // the color to make the next move
     result: Option<GameResult>,
-    check: Option<Piece>, // can or can not be a king in check
+    check: bool, 
     castling_privileges: HashSet<(Piece, Piece)>, 
     possible_en_passant_moves: HashSet<(Piece, Square)>, // the pawn to take en-passant and the target square
 }
@@ -65,18 +65,21 @@ impl Game {
     }
 
     pub fn make_move<'a>(&'a mut self, move_: &Move) -> &'a mut Self {
-        // check move validity?
+        // check move validity? what to do if move invalid or board game in finished state? 
 
-        // get moving piece(s)
-        let piece = self.board.check_square_for_piece_mut(&move_.piece.square).unwrap();
-
-        // remove target piece, if it is a striking move
-        self.board.replace_piece_with(move_.target_square, piece);
-
-        // promotion?
-        dbg!(&self.board);
+        // promotion? en-passant? castles? 
+        
+        // remove pieces from source and target square and add moving piece 
+        // this also works for non-capturing moves (where there is no piece on the target square)
+        self.board
+            .remove_piece_by_square(&move_.piece.square)
+            .remove_piece_by_square(&move_.target_square)
+            .add_piece( Piece {square: move_.target_square, ..move_.piece} );
+      
 
         // recalculate checks, privileges etc
+        self.state.turn = self.next_color();
+        self.state.check = self.in_check();
 
         self
     }
@@ -104,6 +107,36 @@ impl Game {
         // set move meta information, if applicable
     }
 
+    pub fn in_check(&self) -> bool {
+        // get king to move 
+        let curr_king = self.board.pieces.iter()
+            .find(|&p| 
+                    p.color == self.state.turn && 
+                    p.figure == Figure::King)
+            .unwrap();
+        
+        self.board.is_attacked(*curr_king)
+    }
+
+    pub fn in_checkmate(&self) -> bool {
+        // curr_king is in check
+        // no possible move can end the check 
+        
+        false
+    }
+
+    pub fn in_stale_mate(&self) -> bool {
+        // curr player has no valid moves 
+
+    }
+
+    fn next_color(&self) -> Color {
+        match self.state.turn {
+            Color::White => Color::Black,
+            _ => Color::White 
+        }
+    }
+
 }
 
 impl State {
@@ -122,7 +155,10 @@ impl State {
         //         .tuple_combinations()
         //         .filter(|(&a,&b)| (a.figure == King || b.figure == King) && (a.color == b.color))
         //         .collect::<HashSet<(Piece, Piece)>>();
-        State { turn: White, result: None, check: None, 
+        State { 
+            turn: White, 
+            result: None, 
+            check: false, 
             castling_privileges: castling_privileges, 
             possible_en_passant_moves: possible_en_passant_moves }
     }

@@ -198,12 +198,9 @@ pub mod core {
             self
         }
 
-        pub fn replace_piece_with(&mut self, square: Square, piece: &mut Piece) -> &mut Self {
-            if let Some(p) = self.check_square_for_piece(&square) {
-                self.remove_piece(piece);
-            }
-            piece.square = square;
-            self
+        pub fn remove_piece_by_square(&mut self, square: &Square) -> &mut Self {
+            self.pieces.retain(|p| p.square != *square);
+            self 
         }
 
         pub fn is_attacked(&self, piece: Piece) -> bool {

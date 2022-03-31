@@ -104,14 +104,23 @@ fn board_check_square_for_piece() {
 #[test]
 fn add_and_remove_pieces() {
     let board = &mut Board::new();
-    let piece = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("b3")};
+    let kb3 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("b3")};
+    let ra4 = Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("a4")};
+
+    board.add_piece(kb3);
+    board.add_piece(ra4);
     
-    board.add_piece(piece);
     assert_eq!(true, board.check_square_for_piece(board.get_unchecked("b3")).is_some());
-    board.remove_piece(piece);
+    board.remove_piece(&kb3);
     assert_eq!(true, board.check_square_for_piece(board.get_unchecked("b3")).is_none());
+    // remove_piece_by_square
+
+    assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a4")).is_some());
+    board.remove_piece_by_square(&Square::from_str("a4"));
+    assert_eq!(true, board.check_square_for_piece(board.get_unchecked("a4")).is_none());
     assert_eq!(0, board.pieces.len());
 }
+
 
 #[test]
 fn pieces_pawn_available_squares() {
