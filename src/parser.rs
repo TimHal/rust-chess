@@ -71,6 +71,23 @@ pub fn is_fen_piece_char(c: char) -> bool {
 
 impl Piece {
 
+    pub fn to_fen_letter(&self) -> String {
+        let res = match self.figure {
+            Figure::Pawn => "p",
+            Figure::Rook => "r",
+            Figure::Knight => "n",
+            Figure::Bishop => "b",
+            Figure::Queen => "q",
+            Figure::King => "k"
+        }; 
+
+        if(self.color == Color::White) {
+            res.to_uppercase()
+        } else {
+            String::from(res)
+        }
+    }
+
     pub fn from_fen(s: char, pos: &Square) -> Result<Piece, &str> {
         // check if it is a valid FEN Piece character
 
