@@ -222,7 +222,11 @@ pub mod core {
             rank_rev.reverse();
             for rank in rank_rev {
                 for file in rank {
-                    write!(f, "{} ", file)?;
+                    if let Some(piece) = self.check_square_for_piece(&file) {
+                        write!(f, "{}", piece.to_fen_letter())?;
+                    } else {
+                        write!(f, " ")?;
+                    }
                 }
                 writeln!(f, "")?;
             }
