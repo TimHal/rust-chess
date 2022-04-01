@@ -9,10 +9,10 @@ pub struct GameBuilder {
 }
 
 pub struct Game {
-    meta: Option<GameMeta>,
-    board: Board,
-    state: State,
-    moves: Vec<Move>,
+    pub meta: Option<GameMeta>,
+    pub board: Board,
+    pub state: State,
+    pub moves: Vec<Move>,
 }
 
 pub struct State {
@@ -48,6 +48,8 @@ pub struct MoveMeta {
     // flags, move time, comments, engine evaluation etc
 }
 
+pub enum MoveMetaFlag {EnPassant, Castling, Promotion}
+
 pub struct Variation {
     
 }
@@ -67,10 +69,13 @@ impl Game {
     pub fn make_move<'a>(&'a mut self, move_: &Move) -> &'a mut Self {
         // check move validity? what to do if move invalid or board game in finished state? 
 
-        // promotion? en-passant? castles? 
+        // promotion? castles? 
+        // in the case for a promotion it is enough to replace the move_.piece by the desired promotion and proceed as usual 
+        
         
         // remove pieces from source and target square and add moving piece 
         // this also works for non-capturing moves (where there is no piece on the target square)
+        // works by default for en-passant 
         self.board
             .remove_piece_by_square(&move_.piece.square)
             .remove_piece_by_square(&move_.target_square)
@@ -127,7 +132,12 @@ impl Game {
 
     pub fn in_stale_mate(&self) -> bool {
         // curr player has no valid moves 
+        
+        false
+    }
 
+    pub fn current_color(&self) -> Color {
+        self.state.turn
     }
 
     fn next_color(&self) -> Color {
