@@ -61,15 +61,81 @@ pub fn parse_fen(fen_string: &str) -> Result<Board, &str> {
     Ok(board.clone())
 }
 
+
+
 pub fn is_fen_piece_char(c: char) -> bool {
     let valid_chars = vec!['p', 'r', 'n', 'b', 'k', 'q', 'P', 'R', 'N', 'B', 'K', 'Q', '1', '2', '3', '4', '5', '6', '7', '8'];
     valid_chars.contains(&c)
 }
 
+/// Tokenizer:
+/// Parse a string representation of a move into tokens which can be interpreted by the game 
+/// The simples way to do this: [start_square]-[end_square]
+/// More advanced methods will follow
+
+pub enum Token {Piece, Square, Takes, Castles, CastlesSide, EnPassant 
+}
+
+
 // Board -> fen_str
 // Game -> fen_str
 
 impl Piece {
+
+//                                                        .::.
+//                                             _()_       _::_
+//                                   _O      _/____\_   _/____\_
+//            _  _  _     ^^__      / //\    \      /   \      /
+//           | || || |   /  - \_   {     }    \____/     \____/
+//           |_______| <|    __<    \___/     (____)     (____)
+//     _     \__ ___ / <|    \      (___)      |  |       |  |
+//    (_)     |___|_|  <|     \      |_|       |__|       |__|
+//   (___)    |_|___|  <|______\    /   \     /    \     /    \
+//   _|_|_    |___|_|   _|____|_   (_____)   (______)   (______)
+//  (_____)  (_______) (________) (_______) (________) (________)
+//  /_____\  /_______\ /________\ /_______\ /________\ /________\
+//                                              __By Alefith 22.02.95__
+
+// Chess pieces by Joan G. Stark
+
+//                                                      _:_
+//                                                     '-.-'
+//                                            ()      __.'.__
+//                                         .-:--:-.  |_______|
+//                                  ()      \____/    \=====/
+//                                  /\      {====}     )___(
+//                       (\=,      //\\      )__(     /_____\
+//       __    |'-'-'|  //  .\    (    )    /____\     |   |
+//      /  \   |_____| (( \_  \    )__(      |  |      |   |
+//      \__/    |===|   ))  `\_)  /____\     |  |      |   |
+//     /____\   |   |  (/     \    |  |      |  |      |   |
+//      |  |    |   |   | _.-'|    |  |      |  |      |   |
+//      |__|    )___(    )___(    /____\    /____\    /_____\
+//     (====)  (=====)  (=====)  (======)  (======)  (=======)
+//     }===={  }====={  }====={  }======{  }======{  }======={
+// jgs(______)(_______)(_______)(________)(________)(_________)
+// https://www.asciiart.eu/sports-and-outdoors/chess
+
+
+    pub fn to_symbol(&self) -> String {
+        let res = match (self.figure, self.color) {
+            (Figure::Pawn, Color::White) => "♙",
+            (Figure::Rook, Color::White) => "♖",
+            (Figure::Knight, Color::White) => "♘",
+            (Figure::Bishop, Color::White) => "♗",
+            (Figure::Queen, Color::White) => "♕",
+            (Figure::King, Color::White) => "♔",
+            (Figure::Pawn, Color::Black) => "♟",
+            (Figure::Rook, Color::Black) => "♜",
+            (Figure::Knight, Color::Black) => "♞",
+            (Figure::Bishop, Color::Black) => "♝",
+            (Figure::Queen, Color::Black) => "♛",
+            (Figure::King, Color::Black) => "♚"
+            
+        }; 
+
+        String::from(res)
+    }
 
     pub fn to_fen_letter(&self) -> String {
         let res = match self.figure {

@@ -8,13 +8,15 @@ pub struct GameBuilder {
     // ?
 }
 
-pub struct Game {
+#[derive(Clone)]
+pub struct Game{
     pub meta: Option<GameMeta>,
     pub board: Board,
     pub state: State,
     pub moves: Vec<Move>,
 }
 
+#[derive(Clone, Eq, PartialEq)]
 pub struct State {
     // en-passant, castling etc is all done via the game, not the pieces or board as it requires knowledge about game state
     turn: Color, // the color to make the next move
@@ -24,8 +26,10 @@ pub struct State {
     possible_en_passant_moves: HashSet<(Piece, Square)>, // the pawn to take en-passant and the target square
 }
 
+#[derive(Clone, Eq, PartialEq)]
 pub enum GameResult { WhiteWin, BlackWin, Draw }
 
+#[derive(Clone, Eq, PartialEq)]
 pub struct GameMeta {
     // player info, year, place, tournament, player ratings etc etc
 }
@@ -34,10 +38,7 @@ pub struct GameTreeNode {
     
 }
 
-pub struct MoveBuilder {
-
-}
-#[derive(Debug, Hash, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
 pub struct Move {
     piece: Piece,
     target_square: Square,
@@ -61,12 +62,12 @@ impl Game {
         let board = Board::new_in_standard_position();
         let state = State::new(&board);
         let meta = GameMeta::new();
-        let moves: Vec<Move> = vec! [];
+        let moves: Vec<Move> = Vec::new();
 
         Game {board: board, state: state, meta: Some(meta), moves: moves}
     }
 
-    pub fn make_move<'a>(&'a mut self, move_: &Move) -> &'a mut Self {
+    pub fn make_move(&mut self, move_: Move) -> &mut Self {
         // check move validity? what to do if move invalid or board game in finished state? 
 
         // promotion? castles? 
@@ -85,8 +86,29 @@ impl Game {
         // recalculate checks, privileges etc
         self.state.turn = self.next_color();
         self.state.check = self.in_check();
+        self.moves.push(move_);
 
         self
+    }
+
+    pub fn simulate_move(&mut self, move_: Move) -> Self {
+        // Evlaute a move on a copy of the game instance (original game is not affected)
+        let mut res = self.clone();
+        res.make_move(move_);
+        res 
+    }
+
+    pub fn generate_move_from_str(&self, input: &str) -> Move {
+        let mut split = input.split("-");
+        let start_square = split.next().unwrap();
+        let end_square = split.next().unwrap();
+        let piece = *self.board.check_square_for_piece(&Square::from_str(start_square)).unwrap();
+        
+        Move { piece: piece, target_square: Square::from_str(end_square)}
+    }
+
+    pub fn move_from_str(&mut self, input: &str) -> &mut Self {
+        self.make_move(self.generate_move_from_str(input))
     }
 
     pub fn get_moves(&self, color: Color) -> HashSet<Move> {
@@ -114,18 +136,24 @@ impl Game {
 
     pub fn in_check(&self) -> bool {
         // get king to move 
+        self.in_check_color(self.state.turn)
+    }
+
+    pub fn in_check_color(&self, color: Color) -> bool {
+        // checks if the provided color is in check
         let curr_king = self.board.pieces.iter()
             .find(|&p| 
-                    p.color == self.state.turn && 
+                    p.color == color && 
                     p.figure == Figure::King)
             .unwrap();
-        
+    
         self.board.is_attacked(*curr_king)
     }
 
     pub fn in_checkmate(&self) -> bool {
         // curr_king is in check
         // no possible move can end the check 
+        
         
         false
     }

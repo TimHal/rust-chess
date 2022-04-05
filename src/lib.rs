@@ -8,7 +8,7 @@ pub mod core {
     use std::collections::HashSet;
     use crate::parser::*;
 
-    #[derive(Debug, Clone, Copy, PartialEq, Hash)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     pub enum Color { Black, White }
 
     #[derive(Debug, Clone, Copy, PartialEq, Hash)]
@@ -223,7 +223,8 @@ pub mod core {
             for rank in rank_rev {
                 for file in rank {
                     if let Some(piece) = self.check_square_for_piece(&file) {
-                        write!(f, "{}", piece.to_fen_letter())?;
+                        // write!(f, "{}", piece.to_fen_letter())?;
+                        write!(f, "{}", piece.to_symbol())?;
                     } else {
                         write!(f, " ")?;
                     }
