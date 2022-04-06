@@ -150,17 +150,26 @@ impl Game {
         self.board.is_attacked(*curr_king)
     }
 
-    pub fn in_checkmate(&self) -> bool {
+    pub fn in_checkmate(&mut self) -> bool {
         // curr_king is in check
         // no possible move can end the check 
-        
-        
-        false
+        self.in_checkmate_color(self.state.turn)
+    }
+
+    pub fn in_checkmate_color(&mut self, color: Color) -> bool {
+        // king is in check,
+        // no possible move can end the check 
+        if !self.in_check_color(color) {
+            return false 
+        }
+
+        // simulate move to check state again
+        self.get_moves(color).iter()
+            .all(|&mv| self.simulate_move(mv).in_check_color(color))
     }
 
     pub fn in_stale_mate(&self) -> bool {
         // curr player has no valid moves 
-        
         false
     }
 
@@ -173,6 +182,10 @@ impl Game {
             Color::White => Color::Black,
             _ => Color::White 
         }
+    }
+
+    pub fn is_valid(&self) -> bool {
+        true
     }
 
 }

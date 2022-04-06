@@ -47,9 +47,9 @@ fn simulate_move() {
 
     // simulate_move with state checks
     let mut board = common::empty_board();
-    let kd8 = Piece {color: Color::Black, figure: Figure::King, square: *board.get_unchecked("d8")};
-    let kc2 = Piece {color: Color::White, figure: Figure::King, square: *board.get_unchecked("c2")};
-    let rc1 = Piece {color: Color::White, figure: Figure::Rook, square: *board.get_unchecked("c1")};
+    let kd8 = Piece {color: Color::Black, figure: Figure::King, square: Square::from_str("d8")};
+    let kc2 = Piece {color: Color::White, figure: Figure::King, square: Square::from_str("c2")};
+    let rc1 = Piece {color: Color::White, figure: Figure::Rook, square: Square::from_str("c1")};
     board.pieces.extend(vec! [kd8, kc2, rc1]);
 
     let mut game = Game::new();
@@ -87,7 +87,24 @@ fn attempt_invalid_moves() {
 
 #[test]
 fn is_checkmate() {
-    assert_eq!(1,1)
+    let mut game = Game::new();
+    let mut board = common::empty_board();
+    // test against one of the most basic mate positions
+    let ka8 = Piece {color: Color::Black, figure: Figure::King, square: Square::from_str("a8")};
+    let ka1 = Piece {color: Color::White, figure: Figure::King, square: Square::from_str("a1")};
+    let rg7 = Piece {color: Color::White, figure: Figure::Rook, square: Square::from_str("g7")};
+    let rh8 = Piece {color: Color::White, figure: Figure::Rook, square: Square::from_str("h8")};
+
+    board.pieces.extend( vec! [ka8, ka1, rg7, rh8]);
+    game.board = board; 
+
+    assert_eq!(true, game.in_check_color(Color::Black));
+    assert_eq!(true, game.in_checkmate_color(Color::Black));
+
+    // in this case it is not check mate, black can move a rook in between
+    game.board.add_piece(Piece {color: Color::Black, figure: Figure::Rook, square: Square::from_str("c3")});
+    assert_eq!(true, game.in_check_color(Color::Black));
+    assert_eq!(false, game.in_checkmate_color(Color::Black));
 }
 
 #[test]

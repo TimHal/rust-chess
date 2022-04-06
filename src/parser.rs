@@ -147,7 +147,7 @@ impl Piece {
             Figure::King => "k"
         }; 
 
-        if(self.color == Color::White) {
+        if self.color == Color::White {
             res.to_uppercase()
         } else {
             String::from(res)
